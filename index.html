@@ -2,92 +2,110 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Chat simple</title>
+  <title>Chat estilo Discord</title>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap');
+
+    * {
+      box-sizing: border-box;
+    }
+
     body {
-      font-family: Arial, sans-serif;
-      background-color: #f2f2f2;
+      font-family: 'Roboto', sans-serif;
+      background-color: #2c2f33;
       margin: 0;
       padding: 0;
+      height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
+      color: #ddd;
     }
 
     .chat-container {
-      background-color: white;
-      border-radius: 12px;
-      padding: 20px;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+      background-color: #23272a;
+      border-radius: 8px;
       width: 100%;
-      max-width: 500px;
+      max-width: 600px;
+      height: 80vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 0 15px rgba(0,0,0,0.5);
     }
 
-    h2 {
-      margin-top: 0;
-      text-align: center;
-      color: #333;
-    }
-
-    input {
-      padding: 10px;
-      margin: 5px 0;
-      width: calc(100% - 22px);
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      font-size: 16px;
-    }
-
-    button {
-      width: 100%;
-      padding: 10px;
-      margin-top: 10px;
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      font-size: 16px;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background-color: #45a049;
+    .chat-header {
+      padding: 15px;
+      font-size: 20px;
+      font-weight: bold;
+      border-bottom: 1px solid #99aab5;
+      color: #fff;
     }
 
     #chat {
-      margin-top: 15px;
-      max-height: 300px;
+      flex: 1;
+      padding: 15px;
       overflow-y: auto;
-      border: 1px solid #ddd;
-      border-radius: 8px;
+    }
+
+    .mensaje {
+      margin-bottom: 12px;
+    }
+
+    .mensaje strong {
+      color: #7289da;
+    }
+
+    .mensaje span {
+      display: block;
+      margin-top: 2px;
+      color: #ccc;
+    }
+
+    .chat-input {
+      display: flex;
+      flex-direction: column;
+      border-top: 1px solid #99aab5;
       padding: 10px;
-      background-color: #fafafa;
+      background-color: #2c2f33;
     }
 
-    #chat p {
-      background-color: #e0f7fa;
-      padding: 8px 12px;
-      border-radius: 8px;
-      margin: 6px 0;
-      word-wrap: break-word;
+    .chat-input input {
+      background-color: #40444b;
+      border: none;
+      border-radius: 5px;
+      padding: 10px;
+      margin-bottom: 8px;
+      color: #fff;
+      font-size: 14px;
     }
 
-    #chat p:nth-child(odd) {
-      background-color: #dcedc8;
+    .chat-input button {
+      background-color: #7289da;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      padding: 10px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .chat-input button:hover {
+      background-color: #5b6eae;
     }
   </style>
 </head>
 <body>
   <div class="chat-container">
-    <h2>Chat</h2>
-    <input id="nombre" placeholder="Tu nombre" />
-    <input id="mensaje" placeholder="Escribe algo..." />
-    <button onclick="enviarMensaje()">Enviar</button>
+    <div class="chat-header">💬 Chat estilo Discord</div>
     <div id="chat"></div>
+    <div class="chat-input">
+      <input id="nombre" placeholder="Tu nombre (usuario#0000)" />
+      <input id="mensaje" placeholder="Escribe tu mensaje..." />
+      <button onclick="enviarMensaje()">Enviar</button>
+    </div>
   </div>
 
-  <!-- Firebase con compatibilidad antigua -->
+  <!-- Firebase compat -->
   <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-database-compat.js"></script>
 
@@ -114,10 +132,18 @@
     db.ref("mensajes").on("child_added", (snapshot) => {
       const datos = snapshot.val();
       const chat = document.getElementById("chat");
-      const p = document.createElement("p");
-      p.textContent = `${datos.nombre}: ${datos.texto}`;
-      chat.appendChild(p);
-      chat.scrollTop = chat.scrollHeight; // Auto-scroll al último mensaje
+      const mensaje = document.createElement("div");
+      mensaje.className = "mensaje";
+      mensaje.innerHTML = `<strong>${datos.nombre}</strong><span>${datos.texto}</span>`;
+      chat.appendChild(mensaje);
+      chat.scrollTop = chat.scrollHeight;
+    });
+
+    // Enviar con Enter
+    document.getElementById("mensaje").addEventListener("keypress", function(e) {
+      if (e.key === "Enter") {
+        enviarMensaje();
+      }
     });
   </script>
 </body>
